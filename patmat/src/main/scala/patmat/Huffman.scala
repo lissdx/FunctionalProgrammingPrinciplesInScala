@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
  * Assignment 4: Huffman coding
  *
  */
-object Huffman  extends App{
+object Huffman extends App{
 
   /**
    * A huffman code is represented by a binary tree.
@@ -104,7 +104,7 @@ object Huffman  extends App{
    * unchanged.
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = {
-    if (trees.length > 2)
+    if (trees.length > 1)
       (makeCodeTree(trees(0), trees(1)) :: (trees.takeRight(trees.length - 2))).sortBy(e => weight(e))
     else
       trees
@@ -140,9 +140,13 @@ object Huffman  extends App{
    * The parameter `chars` is an arbitrary text. This function extracts the character
    * frequencies from that text and creates a code tree based on them.
    */
-    def createCodeTree(chars: List[Char]): CodeTree = until(singleton, combine)( makeOrderedLeafList(times(chars))).head
-  
+    def createCodeTree(chars: List[Char]): CodeTree = {
+    val hh =until(singleton, combine)( makeOrderedLeafList(times(chars)))
+    hh.head
+  }
 
+  val tt = createCodeTree("someText".toList)
+  println("OK")
   // Part 3: Decoding
 
   type Bit = Int
@@ -155,7 +159,7 @@ object Huffman  extends App{
     def subDecode(subTree: CodeTree, bits: List[Bit], acc: List[Char]): List[Char] = {
       val treeBitsAcc = subTree match {
         case Leaf(char, _) =>  (tree, bits, acc :+ char)
-        case Fork(left, right, _, _) => ( if (bits.head == 0) left else right, bits.tail, acc)
+        case Fork(left, right, _, _) => ( if (bits.nonEmpty && bits.head == 0) left else right, bits.tail, acc)
       }
       if( bits.isEmpty )
         treeBitsAcc._3
